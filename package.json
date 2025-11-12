@@ -11,6 +11,7 @@
     "deploy:sftp": "node ./scripts/deploy-sftp.js",
     "build:hostinger": "npm run build && node ./scripts/deploy-to-hostinger.js",
     "build:analyze": "set \"ANALYZE=true\" && vite build"
+    ,"deploy:local-sftp": "npm run build && node ./scripts/deploy-sftp.js"
   },
   "dependencies": {
     "@google/genai": "^1.28.0",
