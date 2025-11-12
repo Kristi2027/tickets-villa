@@ -1,0 +1,51 @@
+name: Build and Deploy to Hostinger (SFTP)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Prepare upload folder
+        run: |
+          rm -rf hostinger_upload || true
+          mkdir hostinger_upload
+          cp -r dist/* hostinger_upload/
+
+      - name: Save SFTP private key
+        if: ${{ secrets.SFTP_PRIVATE_KEY }}
+        run: |
+          printf '%s\n' "${{ secrets.SFTP_PRIVATE_KEY }}" > ./deploy_key
+          chmod 600 ./deploy_key
+
+      - name: Deploy via Node SFTP script
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_PRIVATE_KEY: ${{ github.workspace }}/deploy_key
+          SFTP_PASSPHRASE: ${{ secrets.SFTP_PASSPHRASE }}
+          LOCAL_PATH: hostinger_upload
+          REMOTE_PATH: ${{ secrets.SFTP_REMOTE_PATH }}
+        run: |
+          node ./scripts/deploy-sftp.js
+
+      - name: Cleanup deploy key
+        if: ${{ secrets.SFTP_PRIVATE_KEY }}
+        run: rm -f ./deploy_key
