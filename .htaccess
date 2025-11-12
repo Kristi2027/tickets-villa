@@ -1,0 +1,16 @@
+# Serve index.html for SPA routes; allow api/ PHP files to be called directly
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # If request is for an existing file or directory, serve it
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # If URL starts with api/, don't rewrite (let PHP handle it)
+  RewriteRule ^api/ - [L]
+
+  # Otherwise serve index.html
+  RewriteRule ^ index.html [L]
+</IfModule>

@@ -1,0 +1,14 @@
+<?php
+// api/config.php.example
+// Example configuration for the GenAI PHP proxy. DO NOT commit secrets to the repository.
+// Copy this file to api/config.php on your server and set real values, or set
+// environment variables in your hosting control panel and leave api/config.php out of the repo.
+
+$GOOGLE_API_KEY = getenv('GOOGLE_API_KEY') ?: 'YOUR_GOOGLE_API_KEY_HERE';
+$GOOGLE_GENAI_ENDPOINT = getenv('GOOGLE_GENAI_ENDPOINT') ?: 'https://generativelanguage.googleapis.com/v1/models/text-bison-001:generate';
+
+// Notes:
+// - Prefer setting environment variables in Hostinger instead of keeping keys in files.
+// - If you must use api/config.php, ensure it is NOT checked into Git and has restrictive file permissions on the server.
+
+?>

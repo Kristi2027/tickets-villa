@@ -25,3 +25,8 @@ api/config.php
 *.njsproj
 *.sln
 *.sw?
+
+# Ignore generated build assets and local upload folder
+assets/
+hostinger_upload/
+index.htaccess
