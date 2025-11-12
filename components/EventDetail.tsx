@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// FIX: Import EventBooking and GuestDetails to use in prop types.
+// NOTE: EventBooking and GuestDetails are imported for prop types.
 import { Event, Showtime, Theatre, User, Offer, EventBooking, GuestDetails, GlobalSettings } from '../types.ts';
 import MovieShowtimeSelector from './MovieShowtimeSelector.tsx';
 import SeatSelection from './SeatSelection.tsx';

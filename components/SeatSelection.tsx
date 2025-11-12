@@ -1,5 +1,5 @@
 import React, { useState, useMemo, memo } from 'react';
-// FIX: Add GuestDetails to the import from types.
+// NOTE: GuestDetails is imported from types for booking flows.
 import { Event, Showtime, SeatType, SeatCategory, SeatSaleStatus, EventBooking, BookedTicket, Theatre, User, GuestDetails, GlobalSettings } from '../types.ts';
 import { initiateGooglePayCheckout } from '../services/paymentService';
 import PaymentModal from './PaymentModal';
@@ -12,7 +12,7 @@ interface SeatSelectionProps {
     user: User | null;
     onBack: () => void;
     onConfirmBoxOfficeSale?: (booking: EventBooking, showDate: string) => void;
-    // FIX: The onBookingSuccess prop should accept an optional guestDetails parameter.
+    // NOTE: onBookingSuccess accepts optional guestDetails for UPI/offline flows.
     onBookingSuccess: (bookingData: Omit<EventBooking, 'id' | 'paymentId'>, guestDetails?: GuestDetails) => void;
     globalSettings: GlobalSettings;
 }
@@ -148,7 +148,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ event, showtime, theatre,
 
     const handleUpiSelect = () => {
         if (pendingBookingData) {
-            // FIX: Pass guestDetails (which will be undefined here, but matches the prop signature).
+            // NOTE: Pass guestDetails (which may be undefined here) to match the prop signature.
             onBookingSuccess(pendingBookingData.bookingData, pendingBookingData.guestDetails);
             setIsPaymentModalOpen(false);
         }

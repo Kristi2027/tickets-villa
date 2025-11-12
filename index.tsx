@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-// FIX: File 'file:///App.tsx' is not a module.
-import App from './App.tsx';
+import App from './App';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

@@ -1,7 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { User, Event, Theatre, EventBooking, PayoutRequest, Venue, Offer, AdminTab, MobileTheatre, Artist, GlobalSettings } from '../types.ts';
-import EventManagement from './EventManagement.tsx';
-import MovieManagement from './Dashboard.tsx';
 import UserManagement from './UserManagement.tsx';
 import TheatreManagement from './TheatreManagement.tsx';
 import MobileTheatreManagement from './MobileTheatreManagement.tsx';
@@ -15,9 +13,13 @@ import AdminEventDetail from './AdminEventDetail.tsx';
 import AdminTheatreDetail from './AdminTheatreDetail.tsx';
 import AdminVenueDetail from './AdminVenueDetail.tsx';
 import PendingEventDetailModal from './PendingEventDetailModal.tsx';
-import EventForm from './EventForm.tsx';
 
-const BoxOffice = lazy(() => import('./BoxOffice.tsx'));
+// Lazy-load management components to reduce initial bundle
+const EventManagement = lazy(() => import('./EventManagement'));
+const MovieManagement = lazy(() => import('./Dashboard'));
+// Lazy-load heavy form and admin components to reduce initial bundle
+const EventForm = lazy(() => import('./EventForm'));
+const BoxOffice = lazy(() => import('./BoxOffice'));
 
 interface AdminDashboardProps {
     user: User | null;
@@ -121,21 +123,33 @@ const AdminDashboard: React.FC<AdminDashboardProps> = (props) => {
                  />
              case 'event_form':
                 const eventToEdit = selectedItem as Event | null;
-                return <EventForm
-                    event={eventToEdit}
-                    theatres={props.theatres}
-                    onSave={(event) => {
-                        props.onSaveEvent(event);
-                        handleBackToDashboard();
-                    }}
-                    onCancel={handleBackToDashboard}
-                    initialCategory={eventToEdit?.category === 'Movies' ? 'Movies' : 'Events'}
-                />;
+                return (
+                    <Suspense fallback={<div className="text-center py-8 text-slate-300">Loading form...</div>}>
+                        <EventForm
+                            event={eventToEdit}
+                            theatres={props.theatres}
+                            onSave={(event) => {
+                                props.onSaveEvent(event);
+                                handleBackToDashboard();
+                            }}
+                            onCancel={handleBackToDashboard}
+                            initialCategory={eventToEdit?.category === 'Movies' ? 'Movies' : 'Events'}
+                        />
+                    </Suspense>
+                );
             case 'dashboard':
             default:
                 switch(activeTab) {
-                    case 'events': return <EventManagement events={props.events} theatres={props.theatres} onSelectEvent={handleSelectEvent} onSaveEvent={props.onSaveEvent} onDeleteEvent={props.onDeleteEvent} />;
-                    case 'movies': return <MovieManagement events={props.events} theatres={props.theatres} onSelectEvent={handleSelectEvent} onSaveEvent={props.onSaveEvent} onDeleteEvent={props.onDeleteEvent} />;
+                    case 'events': return (
+                        <Suspense fallback={<div className="text-center py-8 text-slate-300">Loading...</div>}>
+                            <EventManagement events={props.events} theatres={props.theatres} onSelectEvent={handleSelectEvent} onSaveEvent={props.onSaveEvent} onDeleteEvent={props.onDeleteEvent} />
+                        </Suspense>
+                    );
+                    case 'movies': return (
+                        <Suspense fallback={<div className="text-center py-8 text-slate-300">Loading...</div>}>
+                            <MovieManagement events={props.events} theatres={props.theatres} onSelectEvent={handleSelectEvent} onSaveEvent={props.onSaveEvent} onDeleteEvent={props.onDeleteEvent} />
+                        </Suspense>
+                    );
                     case 'venues': return <VenueManagement venues={props.venues} onSelectVenue={handleSelectVenue} onSaveVenue={props.onSaveVenue} onDeleteVenue={props.onDeleteVenue} />;
                     case 'theatres': return <TheatreManagement initialTheatres={props.theatres} onSaveTheatres={props.onSaveTheatres} />;
                     case 'mobileTheatres': return <MobileTheatreManagement mobileTheatres={props.mobileTheatres} onSaveMobileTheatre={props.onSaveMobileTheatre} onDeleteMobileTheatre={props.onDeleteMobileTheatre} />;

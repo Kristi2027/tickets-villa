@@ -1,30 +1,46 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Optional bundle analyzer. Set ANALYZE=true in the environment to generate report.html in the build output.
+import { visualizer } from 'rollup-plugin-visualizer';
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  
-  const env = {
-    'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
-  };
+  const shouldAnalyze = Boolean(process.env.ANALYZE);
+  const pluginsList = [react()];
+  if (shouldAnalyze) {
+    pluginsList.push(visualizer({ filename: 'dist/report.html', open: false }) as any);
+  }
 
   return {
-    plugins: [react()],
-    define: env,
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, '.'),
-      }
-    },
+    base: './',
+    plugins: pluginsList,
     build: {
-      chunkSizeWarningLimit: 4000
-    },
-    server: {
-      host: true, // Expose server to the network
+      outDir: 'dist',
+      assetsDir: 'assets',
+      // Reduced warning limit after code-splitting improvements
+      chunkSizeWarningLimit: 600,
+      rollupOptions: {
+        output: {
+          // Split node_modules into vendor chunks and separate very large libs.
+          manualChunks(id) {
+            if (!id) return undefined;
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom')) return 'vendor_react';
+              if (id.includes('@google/genai')) return 'vendor_genai';
+              if (id.includes('lodash')) return 'vendor_lodash';
+              return 'vendor';
+            }
+
+            // Group admin/dashboard pages into their own chunk (large UI sections)
+            if (id.includes('/components/Admin') || id.includes('AdminDashboard')) return 'admin';
+            if (id.includes('/components/TheatreManager') || id.includes('TheatreManagerDashboard')) return 'theatre_manager';
+            if (id.includes('/components/Artist') || id.includes('ArtistDashboard')) return 'artist';
+
+            return undefined;
+          }
+        }
+      }
     }
-  };
-});
+  }
+})
+

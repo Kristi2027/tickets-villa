@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Event, Theatre } from '../types';
-import EventForm from './EventForm';
 import ConfirmationModal from './ConfirmationModal';
+
+// Lazy-load heavy EventForm component
+const EventForm = lazy(() => import('./EventForm'));
 
 interface EventManagementProps {
     events: Event[];
@@ -56,13 +58,17 @@ const EventManagement: React.FC<EventManagementProps> = ({ events, theatres, onS
     };
 
     if (isFormVisible) {
-        return <EventForm 
-            event={editingEvent} 
-            theatres={theatres}
-            onSave={handleSave} 
-            onCancel={() => setIsFormVisible(false)}
-            initialCategory={'Events'}
-        />;
+        return (
+            <Suspense fallback={<div className="text-center py-8 text-slate-300">Loading form...</div>}>
+                <EventForm 
+                    event={editingEvent} 
+                    theatres={theatres}
+                    onSave={handleSave} 
+                    onCancel={() => setIsFormVisible(false)}
+                    initialCategory={'Events'}
+                />
+            </Suspense>
+        );
     }
 
     return (

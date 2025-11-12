@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import useAppLogic from './hooks/useAppLogic';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import EventList from './components/EventList.tsx';
-import EventDetail from './components/EventDetail.tsx';
+// Lazy-load heavier views to reduce initial bundle size
+const EventDetail = React.lazy(() => import('./components/EventDetail'));
 import Login from './components/Login.tsx';
 import MyBookings from './components/MyBookings.tsx';
-import AdminDashboard from './components/AdminDashboard.tsx';
-import TheatreManagerDashboard from './components/TheatreManagerDashboard.tsx';
-import ArtistDashboard from './components/ArtistDashboard.tsx';
-import ArtistProfile from './components/ArtistProfile.tsx';
-import VenueDetail from './components/VenueDetail.tsx';
-import MobileTheatreDetail from './components/MobileTheatreDetail.tsx';
-import BookingConfirmation from './components/BookingConfirmation.tsx';
+const AdminDashboard = React.lazy(() => import('./components/AdminDashboard'));
+const TheatreManagerDashboard = React.lazy(() => import('./components/TheatreManagerDashboard'));
+const ArtistDashboard = React.lazy(() => import('./components/ArtistDashboard'));
+const ArtistProfile = React.lazy(() => import('./components/ArtistProfile'));
+const VenueDetail = React.lazy(() => import('./components/VenueDetail'));
+const MobileTheatreDetail = React.lazy(() => import('./components/MobileTheatreDetail'));
+const BookingConfirmation = React.lazy(() => import('./components/BookingConfirmation'));
 
 const App: React.FC = () => {
     const appState = useAppLogic();
@@ -56,7 +57,9 @@ const App: React.FC = () => {
         <div className="bg-zinc-950 text-white min-h-screen">
             <Header user={appState.user} onNavigate={appState.handleNavigate} onCreateEvent={() => {}} categoryVisibility={appState.categoryVisibility} activeView={appState.activeView} displayMode={appState.displayMode} viewingArtistAsAdmin={appState.viewingArtistAsAdmin} onExitArtistDashboardView={appState.handleExitArtistDashboardView}/>
             <main className="container mx-auto px-4 py-8">
-                {renderContent()}
+                <Suspense fallback={<div className="text-center">Loading...</div>}>
+                    {renderContent()}
+                </Suspense>
             </main>
             <Footer user={appState.user} onNavigate={appState.handleNavigate} onCreateEvent={() => {}} />
         </div>

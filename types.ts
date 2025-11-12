@@ -262,6 +262,9 @@ export type ConfirmationData =
 
 export type AppView = 'event_list' | 'event_detail' | 'venue_detail' | 'mobile_theatre_detail' | 'artist_profile' | 'confirmation' | 'login' | 'my_bookings' | 'admin' | 'theatre_manager' | 'artist_dashboard';
 
+export type AdminTab = 'events' | 'movies' | 'users' | 'theatres' | 'mobile_theatres' | 'artists' | 'payouts' | 'pending_events' | 'venues' | 'offers' | 'access_control' | 'boxoffice';
+
+
 export interface PaymentGatewaySettings {
     upiId: string;
     razorpayKeyId: string;

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-// FIX: Add Artist and ArtistBooking to imports
+// NOTE: Artist and ArtistBooking are imported for artist booking features
 import { User, EventBooking, VenueBooking, Event, Venue, MobileTheatre, Artist, ArtistBooking } from '../types.ts';
 
 interface MyBookingsProps {
@@ -74,7 +74,7 @@ const MyBookings: React.FC<MyBookingsProps> = ({ user, bookings, venueBookings, 
         </button>
     );
 
-    const BookingCard = ({ booking }: { booking: typeof allUserBookings[0] }) => {
+    const BookingCard: React.FC<{ booking: typeof allUserBookings[0] }> = ({ booking }) => {
         let title, image, dateDisplay, location;
 
         if (booking.type === 'venue') {
